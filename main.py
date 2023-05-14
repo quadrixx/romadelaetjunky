@@ -1,17 +1,16 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import discord
+from discord.ext import commands
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix='j!', intents = intents)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    #привет я ромка
-    print_hi('PyCharm')
-#asdasdasdasdasd
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+
+
+
+
+
+bot.run('MTEwNzM5NTkxNjY2MDQ5MDI0MA.GsW_Wi.BGdsMPplqRRcG9etNGi0jE9vhlS0qBNdFyIFGM')
