@@ -8,13 +8,14 @@ class OnReadyCog(commands.Cog):
 
     @commands.Cog.listener("on_ready")
     async def on_ready(self):
-        test_channel = 'null'
+        print('1')
+        """test_channel = 'null'
         for server in self.bot.guilds:
             for channel in server.channels:
                 if channel.name == "тестовый":
                     test_channel = channel.id
         if test_channel != 'null':
-            await self.bot.get_channel(test_channel).send("bot is online")
+            await self.bot.get_channel(test_channel).send("bot is online")"""
 
 
 def setup(bot):
