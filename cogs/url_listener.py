@@ -15,4 +15,5 @@ class url_listener(commands.Cog):
             for att in attachments:
                 self.lou.append(att.url)
 
-
+def setup(bot):
+    bot.add_cog(url_listener(bot,[]))
