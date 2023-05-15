@@ -1,12 +1,21 @@
 import discord
 from discord.ext import commands
 
-bot = discord.Bot()
-@bot.event
-async def on_ready():
-    for server in bot.guilds:
-        for channel in server.channels:
-            if channel.name == 'основной':
-                text_channel= channel.id
-    await bot.get_channel(text_channel).send("bot is online")
-bot.run('MTEwNzM5NTkxNjY2MDQ5MDI0MA.GsW_Wi.BGdsMPplqRRcG9etNGi0jE9vhlS0qBNdFyIFGM')
+
+class OnReadyCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener("on_ready")
+    async def on_ready(self):
+        test_channel = 'null'
+        for server in self.bot.guilds:
+            for channel in server.channels:
+                if channel.name == "тестовый":
+                    test_channel = channel.id
+        if test_channel != 'null':
+            await self.bot.get_channel(test_channel).send("bot is online")
+
+
+def setup(bot):
+    bot.add_cog(OnReadyCog(bot))
