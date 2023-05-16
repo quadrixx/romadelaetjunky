@@ -1,6 +1,8 @@
 from discord.ext import commands
-from Demotivor import Demotivator
+import discord
+from Demotivor import demotivate
 import random
+import asyncio
 class msg_listener(commands.Cog):
     def __init__(self, bot, list_of_msgs,list_of_urls):
         self.bot = bot
@@ -8,29 +10,38 @@ class msg_listener(commands.Cog):
         self.lou = list_of_urls
         self.ready_for_msgs = False
         self.ready_for_urls = False
-        self.obj = Static(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
+        self.obj = Static(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou, self.bot)
     #тут делаем счетчик сообщений
     @commands.Cog.listener()
     async def on_message(self, message):
-        if len(self.lom) < 10 and message.content != "":
-            self.lom.append(message.content)
-        elif message.content == "":
-            pass
-        else:
-            self.ready_for_msgs = True
-        attachments = message.attachments
-        if len(attachments) != 0:
-            self.ready_for_urls = True
-            for att in attachments:
-                self.lou.append(att.url)
-        self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
+        if message.channel.name == "тестовый":
+            self.obj.channel = message.channel
+            if len(self.lom) < 10 and message.content != "":
+                self.lom.append(message.content)
+            elif message.content == "":
+                pass
+            else:
+                self.ready_for_msgs = True
+            attachments = message.attachments
+            if len(attachments) != 0:
+                self.ready_for_urls = True
+                for att in attachments:
+                    self.lou.append(att.url)
+            z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
+            if z == True:
+                self.lom = []
+                self.lou = []
+                self.ready_for_msgs = False
+                self.ready_for_urls = False
 
 class Static:
-    def __init__(self, msg_rdy: bool, url_rdy: bool, lom, lou):
+    def __init__(self, msg_rdy: bool, url_rdy: bool, lom, lou, bot):
         self.msg_rdy = msg_rdy
         self.url_rdy = url_rdy
         self.lom = lom
         self.lou = lou
+        self.bot = bot
+        self.channel = None
 
     def update(self, msg, url, lom, lou):
         self.msg_rdy = msg
@@ -44,8 +55,12 @@ class Static:
             print(self.lou)
             self.create_demo(self.shuffle(self.lom, self.lou))
 
+            asyncio.get_event_loop().create_task(self.channel.send(file=discord.File('demotivated.png')))
+            return True
+        return False
+
     def create_demo(self, lst):
-        dem = Demotivator(*lst)
+        demotivate(*lst)
 
     def shuffle(self, lom: list, lou: list) -> list:
         for_dem = []
@@ -54,6 +69,7 @@ class Static:
             for_dem.append(lom[a])
         a = random.randint(0, len(lou)-1)
         for_dem.append(lou[a])
+        print(for_dem)
         return for_dem
 def setup(bot):
     bot.add_cog(msg_listener(bot,[],[]))

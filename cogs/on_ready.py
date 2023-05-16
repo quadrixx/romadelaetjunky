@@ -8,6 +8,7 @@ class OnReadyCog(commands.Cog):
 
     @commands.Cog.listener("on_ready")
     async def on_ready(self):
+        await self.bot.fetch_channel('1107399217313501345')
         print('1')
         """test_channel = 'null'
         for server in self.bot.guilds:
