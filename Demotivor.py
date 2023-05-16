@@ -1,5 +1,7 @@
 from PIL import Image, ImageFont, ImageDraw
 import requests
+import discord
+from discord.ext import commands
 
 
 def text_size(font_size, text):
@@ -24,7 +26,7 @@ def di(url):
         handler.write(img_data)
 
 
-class Demotivator():
+class Demotivator(commands.Cog):
     def __init__(self, lower_text, higher_text, pic_url):
         self.lower_text = lower_text
         self.higher_text = higher_text
