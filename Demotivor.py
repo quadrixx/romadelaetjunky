@@ -53,13 +53,18 @@ class Demotivator(commands.Cog):
                 img_center = pic_center(pic_x, pic_y, size[0], size[1])
                 dem.paste(img, (pic_x, pic_y))
                 # ниже рисует белую рамку вокруг картинки
-                draw.rectangle(((pic_x - 2, pic_y - 2), (pic_x + size[0] + 2, pic_y + size[1] + 2)), fill=None,
-                               outline='white')
+                draw.rectangle(((pic_x - 2, pic_y - 2), (pic_x + size[0] + 2, pic_y + size[1] + 2)), fill=None,outline='white')
 
                 # дальше создание с текста
                 upper_font_size = round(width / (len(upper_text) * 0.5))
                 upper_font = ImageFont.truetype("times.ttf", size=upper_font_size)
                 upper_text_size = text_size(upper_font_size, upper_text)
+                # костыль
+                while upper_text_size[1] > ((height - size[1] - pic_y - upper_text_size[1] * 2)):
+                    upper_text_size = text_size(upper_font_size, upper_text)
+                    upper_font_size = upper_font_size - 1
+                upper_font = ImageFont.truetype("times.ttf", size=upper_font_size)
+
                 draw.text((img_center[0] - (upper_text_size[0] / 2), pic_y + size[1] + size[1] / 20), text=upper_text,
                           color=(255, 255, 255), font=upper_font)
 
