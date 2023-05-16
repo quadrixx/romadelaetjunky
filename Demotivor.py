@@ -39,6 +39,12 @@ def demotivate(upper_text, lower_text, pic_url):
             # ниже вычисление размера всего демотиватора
             width = size[0] + size[0] * 0.4
             height = size[1] + size[1] * 0.8
+            while width > 2000 or height > 2000:
+                print('img reduced')
+                img = img.reduce(2)
+                size = img.size
+                width = size[0] + size[0] * 0.4
+                height = size[1] + size[1] * 0.8
             dem = dem.crop((0, 0, width, height))  # вырезаем фон для демотиватора
             draw = ImageDraw.Draw(dem)
 
