@@ -35,7 +35,7 @@ class msg_listener(commands.Cog):
             z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
             if z == True:
                 self.lom = []
-                if len(self.lou >= 50):
+                if len(self.lou) >= 50:
                     self.lou = []
                 self.ready_for_msgs = False
                 self.ready_for_urls = False
