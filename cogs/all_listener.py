@@ -3,7 +3,9 @@ import discord
 from Demotivor import demotivate
 import random
 import asyncio
+
 class msg_listener(commands.Cog):
+    #костыль
     def __init__(self, bot, list_of_msgs,list_of_urls):
         self.bot = bot
         self.lom = list_of_msgs
@@ -11,11 +13,14 @@ class msg_listener(commands.Cog):
         self.ready_for_msgs = False
         self.ready_for_urls = False
         self.obj = Static(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou, self.bot)
-    #тут делаем счетчик сообщений
+    #костыль
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.obj.channel = await self.bot.fetch_channel('1107399217313501345')
+    #костыль
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.name == "тестовый":
-            self.obj.channel = message.channel
             if len(self.lom) < 10 and message.content != "":
                 self.lom.append(message.content)
             elif message.content == "":
@@ -30,7 +35,8 @@ class msg_listener(commands.Cog):
             z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
             if z == True:
                 self.lom = []
-                self.lou = []
+                if len(self.lou >= 50):
+                    self.lou = []
                 self.ready_for_msgs = False
                 self.ready_for_urls = False
 
@@ -67,6 +73,7 @@ class Static:
         for i in range(2):
             a = random.randint(0, len(lom)-1)
             for_dem.append(lom[a])
+            lom.remove(lom[a])
         a = random.randint(0, len(lou)-1)
         for_dem.append(lou[a])
         print(for_dem)
