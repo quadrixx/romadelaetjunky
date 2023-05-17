@@ -21,8 +21,8 @@ class msg_listener(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.name == "тестовый":
-            if len(self.lom) < 10 and message.content != "":
-                self.lom.append(message.content)
+            if len(self.lom) < 10 and message.content != "" and message.content != "<" and len(message.content) < 60 and message.content[-1] != ">":
+                self.lom.append(message.content) #добавление текстов
             elif message.content == "":
                 pass
             else:
@@ -31,7 +31,7 @@ class msg_listener(commands.Cog):
             if len(attachments) != 0:
                 self.ready_for_urls = True
                 for att in attachments:
-                    self.lou.append(att.url)
+                    self.lou.append(att.url) #добавление юрлов
             z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
             if z == True:
                 self.lom = []
