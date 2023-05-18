@@ -3,10 +3,11 @@ import discord
 from Demotivor import demotivate
 import random
 import asyncio
+import emoji
 
 
 def msg_filter(msg):
-    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60:
+    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60 or emoji.is_emoji(msg):
         return False
     else:
         return True
