@@ -4,6 +4,13 @@ from Demotivor import demotivate
 import random
 import asyncio
 
+
+def msg_filter(msg):
+    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60:
+        return False
+    else:
+        return True
+
 class msg_listener(commands.Cog):
     #костыль
     def __init__(self, bot, list_of_msgs,list_of_urls):
@@ -21,7 +28,7 @@ class msg_listener(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.name == "тестовый":
-            if len(self.lom) < 10 and message.content != "" and message.content != "<" and len(message.content) < 60 and message.content[-1] != ">":
+            if len(self.lom) < 10 and message.content != "" and msg_filter(message.content):
                 self.lom.append(message.content) #добавление текстов
             elif message.content == "":
                 pass
