@@ -7,7 +7,7 @@ import emoji
 
 
 def msg_filter(msg):
-    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60 or emoji.is_emoji(msg):
+    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60:
         return False
     else:
         return True
@@ -28,12 +28,16 @@ class msg_listener(commands.Cog):
     #костыль
     @commands.Cog.listener()
     async def on_message(self, message):
+        len_restriction = 10
         if message.channel.name == "тестовый":
-            if len(self.lom) < 10 and message.content != "" and msg_filter(message.content):
-                self.lom.append(message.content) #добавление текстов
+            result = emoji.replace_emoji(message.content, replace='')
+            while '>' in result and '<' in result:
+                result = result.replace(result[result.index('<'):result.index('>') + 1], '')
+            if len(self.lom) < len_restriction and result != "" and msg_filter(result):
+                self.lom.append(result) #добавление текстов
             elif message.content == "":
                 pass
-            else:
+            elif len(self.lom) >= len_restriction:
                 self.ready_for_msgs = True
             attachments = message.attachments
             if len(attachments) != 0:
