@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands,bridge
-
+from random import randint
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='j!', intents = intents)
 

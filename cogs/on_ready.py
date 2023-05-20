@@ -5,6 +5,8 @@ from discord.ext import commands
 class OnReadyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print('a'*60)
+
 
     @commands.Cog.listener("on_ready")
     async def on_ready(self):

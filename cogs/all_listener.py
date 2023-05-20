@@ -7,12 +7,13 @@ import emoji
 
 
 def msg_filter(msg):
-    if (msg[0] == "<" and msg[-1] == ">") or msg[0:5] == "https" or len(msg) > 60 or emoji.is_emoji(msg):
+    if msg[0:5] == "https" or len(msg) > 60:
         return False
     else:
         return True
 
-class msg_listener(commands.Cog):
+
+class MsgListener(commands.Cog):
     #костыль
     def __init__(self, bot, list_of_msgs,list_of_urls):
         self.bot = bot
@@ -28,12 +29,14 @@ class msg_listener(commands.Cog):
     #костыль
     @commands.Cog.listener()
     async def on_message(self, message):
+        len_restriction = 10
         if message.channel.name == "тестовый":
-            if len(self.lom) < 10 and message.content != "" and msg_filter(message.content):
-                self.lom.append(message.content) #добавление текстов
-            elif message.content == "":
-                pass
-            else:
+            result = emoji.replace_emoji(message.content, replace='')
+            while '>' in result and '<' in result:
+                result = result.replace(result[result.index('<'):result.index('>') + 1], '')
+            if len(self.lom) < len_restriction and result != "" and msg_filter(result):
+                self.lom.append(result) #добавление текстов
+            elif len(self.lom) >= len_restriction:
                 self.ready_for_msgs = True
             attachments = message.attachments
             if len(attachments) != 0:
@@ -41,20 +44,17 @@ class msg_listener(commands.Cog):
                 for att in attachments:
                     self.lou.append(att.url) #добавление юрлов
             z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
-            if z == True:
+            if z:
                 self.lom = []
                 if len(self.lou) >= 50:
                     self.lou = []
                 self.ready_for_msgs = False
                 self.ready_for_urls = False
 
+
 class Static:
     def __init__(self, msg_rdy: bool, url_rdy: bool, lom, lou, bot):
-        self.msg_rdy = msg_rdy
-        self.url_rdy = url_rdy
-        self.lom = lom
-        self.lou = lou
-        self.bot = bot
+        self.update(msg_rdy, url_rdy, lom, lou)
         self.channel = None
 
     def update(self, msg, url, lom, lou):
@@ -67,14 +67,11 @@ class Static:
         if self.msg_rdy == True and self.url_rdy == True:
             print(self.lom)
             print(self.lou)
-            self.create_demo(self.shuffle(self.lom, self.lou))
+            demotivate(*self.shuffle(self.lom, self.lou))
 
             asyncio.get_event_loop().create_task(self.channel.send(file=discord.File('demotivated.png')))
             return True
         return False
-
-    def create_demo(self, lst):
-        demotivate(*lst)
 
     def shuffle(self, lom: list, lou: list) -> list:
         for_dem = []
@@ -86,8 +83,10 @@ class Static:
         for_dem.append(lou[a])
         print(for_dem)
         return for_dem
+
+
 def setup(bot):
-    bot.add_cog(msg_listener(bot,[],[]))
+    bot.add_cog(MsgListener(bot, [], []))
 
 
 
