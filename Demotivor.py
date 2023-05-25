@@ -1,5 +1,10 @@
 from PIL import Image, ImageFont, ImageDraw
 import requests
+import time
+
+def main():
+    for i in range(10):
+        demotivate('dsf', "dxc", link)
 
 
 def text_size(text, font):
@@ -71,7 +76,10 @@ def demotivate(upper_text, lower_text, pic_url):
         lower_text_y = upper_text_y + lower_text_size[1] + upper_text_size[1]/2
         draw.text((lower_text_x, lower_text_y), text=lower_text, color=(255, 255, 255), font=lower_font)
         dem.save('demotivated.png')
-        #dem.show()
-#link = "https://media.discordapp.net/attachments/830124399369126001/1106618492469391380/image.png?width=799&height=676"
-#demotivate('dsf', "dxc", link)
-#комментарии для тестов
+        dem.show()
+link = "https://media.discordapp.net/attachments/830124399369126001/1106618492469391380/image.png?width=799&height=676"
+if __name__ == '__main__':
+    start_time = time.time()
+    main()
+    print(f'{time.time() - start_time}sec')
+

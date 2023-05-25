@@ -15,7 +15,7 @@ def msg_filter(msg):
 
 class MsgListener(commands.Cog):
     #костыль
-    def __init__(self, bot, list_of_msgs,list_of_urls):
+    def __init__(self, bot, list_of_msgs, list_of_urls):
         self.bot = bot
         self.lom = list_of_msgs
         self.lou = list_of_urls
