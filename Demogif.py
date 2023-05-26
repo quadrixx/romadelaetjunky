@@ -32,6 +32,3 @@ def demotivate_gif(upper_text, lower_text, gif_name:str):
         frame = Image.open(b)
         frames.append(frame)
     frames[0].save('out.gif', save_all=True, append_images=frames[1:], duration=40, loop=0)
-
-
-demotivate_gif("venomancer reaction", 'venomancer reaction', "image.gif")
