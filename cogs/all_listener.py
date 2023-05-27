@@ -3,96 +3,80 @@ import discord
 from Demotivor import demotivate
 import random
 import asyncio
-import emoji
+from emoji import replace_emoji
+import os
 
 
+# функция, которая проверяет содержание сообщения
 def msg_filter(msg):
-    if msg[0:5] == "https" or len(msg) > 60:
+    if msg[0:5] == "https" or len(msg) > 60 or msg.startswith('j!'):
         return False
     else:
         return True
 
 
+# функция, которая очищает сообщения от смайликов
+def dispose_of_emojis(string):
+    result = replace_emoji(string, replace='')
+    while '<' in result and '>' in result:
+        result = result.replace(result[result.index('<'):result.index('>') + 1], '')
+    return result
+
+
 class MsgListener(commands.Cog):
-    #костыль
-    def __init__(self, bot, list_of_msgs, list_of_urls):
+    def __init__(self, bot: discord.Bot) -> None:
         self.bot = bot
-        self.lom = list_of_msgs
-        self.lou = list_of_urls
-        self.ready_for_msgs = False
-        self.ready_for_urls = False
-        self.obj = Static(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou, self.bot)
-    #костыль
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.obj.channel = await self.bot.fetch_channel('1107399217313501345')
-    #костыль
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        len_restriction = 10
-        if message.channel.name == "тестовый":
-            result = emoji.replace_emoji(message.content, replace='')
-            while '>' in result and '<' in result:
-                result = result.replace(result[result.index('<'):result.index('>') + 1], '')
-            if len(self.lom) < len_restriction and result != "" and msg_filter(result):
-                self.lom.append(result) #добавление текстов
-            elif len(self.lom) >= len_restriction:
-                self.ready_for_msgs = True
-            attachments = message.attachments
-            if len(attachments) != 0:
-                self.ready_for_urls = True
-                for att in attachments:
-                    self.lou.append(att.url) #добавление юрлов
-            z = self.obj.update(self.ready_for_msgs, self.ready_for_urls, self.lom, self.lou)
-            if z:
-                self.lom = []
-                if len(self.lou) >= 50:
-                    self.lou = []
-                self.ready_for_msgs = False
-                self.ready_for_urls = False
-
-
-class Static:
-    def __init__(self, msg_rdy: bool, url_rdy: bool, lom, lou, bot):
-        self.update(msg_rdy, url_rdy, lom, lou)
         self.channel = None
 
-    def update(self, msg, url, lom, lou):
-        self.msg_rdy = msg
-        self.url_rdy = url
+    # когда бот врубается, проверяет наличие отдельный папки для каждого сервера, на которых он пашет
+    @commands.Cog.listener()
+    async def on_ready(self):
+        folders = os.listdir('servers')
+        for guild in self.bot.guilds:
+            name = guild.name
+            if name not in folders:
+                os.mkdir(f'servers//{name}')
+                for i in ['msgs', 'urls']:
+                    with open(f'servers//{name}//{i}.txt', 'w') as f:
+                        f.write('')
+
+    # listener in charge of managing msgs
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        cnt = message.content
+        if msg_filter(cnt):
+            cnt = dispose_of_emojis(cnt)
+
+        else:
+            pass
+
+    # listener in charge of managing urls
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        pass
+
+    @commands.command()
+    async def set(self, ctx):
+        channels = ctx.guild.channels
+        for i in channels:
+            name = i.name
+            if ctx.message.content[6::] == name:
+                self.channel = discord.utils.get(channels, name=name)
+                await ctx.send(embed=discord.Embed(title=f'junky is running on "{name}"', colour=discord.Color.green()))
+                break
+        else:
+            await ctx.send(embed=discord.Embed(title='channel not found', colour=discord.Color.red()))
+
+
+class Counter:
+    def __init__(self, lom: list, lou: list, len_restriction: int) -> None:
         self.lom = lom
         self.lou = lou
-        print(self.msg_rdy)
-        print(self.lom)
-        if self.msg_rdy == True and self.url_rdy == True:
-            print(self.lom)
-            print(self.lou)
-            demotivate(*self.shuffle(self.lom, self.lou))
+        self.len_restriction = len_restriction
 
-            asyncio.get_event_loop().create_task(self.channel.send(file=discord.File('demotivated.png')))
-            return True
-        return False
-
-    def shuffle(self, lom: list, lou: list) -> list:
-        for_dem = []
-        for i in range(2):
-            a = random.randint(0, len(lom)-1)
-            for_dem.append(lom[a])
-            lom.remove(lom[a])
-        a = random.randint(0, len(lou)-1)
-        for_dem.append(lou[a])
-        print(for_dem)
-        return for_dem
+    def check_for_msgs(self, lom):
+        return len(lom) <= self.len_restriction
 
 
 def setup(bot):
-    bot.add_cog(MsgListener(bot, [], []))
-
-
-
-
-
-
-
-
-
+    bot.add_cog(MsgListener(bot))
