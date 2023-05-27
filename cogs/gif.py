@@ -7,6 +7,7 @@ from discord.ext import commands
 
 key = 'AIzaSyAaxn_f4rZAW89i65kxc4jNxFDx414_gtU'
 
+#проверяет типа гифки
 def check(content):
     if content.startswith('https://tenor'):
         return True
@@ -19,12 +20,10 @@ def check(content):
 def tenor_parser(link: str):
     r = requests.get(link)
     soup = bs(r.text, "html.parser")
-    file = requests.get(soup.select('[itemprop="contentUrl"]')[0]['content'])
-    with open('gifka.gif', 'wb') as f:
-        f.write(file.content)
+    free_link_downloader(soup.select('[itemprop="contentUrl"]')[0]['content'])
 
 
-def free_link_parser(link: str):
+def free_link_downloader(link: str):
     r = requests.get(link)
     with open('gifka.gif', 'wb') as f:
         f.write(r.content)
@@ -45,7 +44,7 @@ class GifProcessor(commands.Cog):
                 print(a.attachments)
                 break
             elif not check(cnt):
-                free_link_parser(cnt)
+                free_link_downloader(cnt)
                 a = await ctx.send(file=discord.File('gifka.gif'))
                 break
             else:
