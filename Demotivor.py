@@ -4,6 +4,8 @@ import requests
 
 def text_size(text, font):
     #возвращает примерный размер текста по горизонтали и вертикали в пикселях
+    if text == "" or text == " ":
+        return 0, 0
     ascent, descent = font.getmetrics()
     text_width = font.getmask(text).getbbox()[2]
     text_height = font.getmask(text).getbbox()[3] + descent
@@ -80,14 +82,14 @@ def demotivate(upper_text, lower_text, file):
     lower_text_y = upper_text_y + lower_text_size[1] + upper_text_size[1]/2
     draw.text((lower_text_x, lower_text_y), text=lower_text, color=(255, 255, 255), font=lower_font)
 
-    if type(file) == type("string"):
+    '''if type(file) == type("string"):
         #если был был юрл то картинка сохраняется
         dem.save('demotivated.png')
     else:
         #если это был кадр из гифки то его демотивированная версия
         #возвращается в демогиф
-        return dem
-    #dem.show()
-#link = "https://media.discordapp.net/attachments/1107399270404989099/1111386315246809138/image.png"
-#demotivate('dsf', "dxc", link)
+        return dem'''
+    dem.show()
+link = "https://media.discordapp.net/attachments/1107399270404989099/1111386315246809138/image.png"
+demotivate(' ', " ", link)
 #комментарии для тестов
