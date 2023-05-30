@@ -10,5 +10,6 @@ class roll(commands.Cog):
         number = randint(0, 100)
         await ctx.respond("{} получает случайное число (1-100): {}".format(ctx.user.name, number))
 
+
 def setup(bot):
     bot.add_cog(roll(bot))

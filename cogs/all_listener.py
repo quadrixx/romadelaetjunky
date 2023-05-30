@@ -40,13 +40,20 @@ class MsgListener(commands.Cog):
                     with open(f'servers//{name}//{i}.txt', 'w') as f:
                         f.write('')
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        name = guild.name
+        os.mkdir(f'servers//{name}')
+        for i in ['msgs', 'urls']:
+            with open(f'servers//{name}//{i}.txt', 'w') as f:
+                f.write('')
+
     # listener in charge of managing msgs
     @commands.Cog.listener()
     async def on_message(self, message):
         cnt = message.content
         if msg_filter(cnt):
             cnt = dispose_of_emojis(cnt)
-
         else:
             pass
 

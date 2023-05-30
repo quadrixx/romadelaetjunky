@@ -50,7 +50,7 @@ class GifProcessor(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(guild_ids = [830124398799224832], name = 'demotivate')
+    @commands.slash_command(name = 'demotivate')
     async def demotivate(self, ctx):
         modal = MyModal()
         await ctx.interaction.response.send_modal(modal)
@@ -74,8 +74,6 @@ class GifProcessor(commands.Cog):
         print(modal.upper_text)
         demotivate_gif(modal.upper_text, modal.lower_text, 'gifka.gif')
         await ctx.send(file=discord.File('out.gif'))
-
-
 
 
 def setup(bot):
