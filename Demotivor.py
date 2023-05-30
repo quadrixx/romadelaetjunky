@@ -27,14 +27,12 @@ def demotivate(upper_text, lower_text, file):
     if type(file) == type("string"):
         #если на вход подается стока то это юрл картинки
         #это когда делаем демотиватор картинки
-        print("img from url")
         di(file)
         filename = "image.jpg"
         img = Image.open(filename)
         img.load()
     else:
         #если это не строка то это кадр гифки из Demogif
-        print("gif frame")
         img = file
     size = img.size  # размер картинки внутри демотиватора
     # ниже вычисление размера всего демотиватора
@@ -82,14 +80,14 @@ def demotivate(upper_text, lower_text, file):
     lower_text_y = upper_text_y + lower_text_size[1] + upper_text_size[1]/2
     draw.text((lower_text_x, lower_text_y), text=lower_text, color=(255, 255, 255), font=lower_font)
 
-    '''if type(file) == type("string"):
+    if type(file) == type("string"):
         #если был был юрл то картинка сохраняется
         dem.save('demotivated.png')
     else:
         #если это был кадр из гифки то его демотивированная версия
         #возвращается в демогиф
-        return dem'''
-    dem.show()
-link = "https://media.discordapp.net/attachments/1107399270404989099/1111386315246809138/image.png"
-demotivate(' ', " ", link)
+        return dem
+    #dem.show()
+#link = "https://media.discordapp.net/attachments/1107399270404989099/1111386315246809138/image.png"
+#demotivate(' ', " ", link)
 #комментарии для тестов
