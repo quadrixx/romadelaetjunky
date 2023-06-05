@@ -36,7 +36,7 @@ def demotivate(upper_text, lower_text, file):
         img = file
     size = img.size  # размер картинки внутри демотиватора
     # ниже вычисление размера всего демотиватора
-    width = int(size[0] + size[0] * 0.4)
+    width = int(size[0] + size[0] * 0.2)
     height = int(size[1] + size[1] * 0.4)
     while width > 2000 or height > 2000:
         width = int(width/2)
@@ -88,6 +88,6 @@ def demotivate(upper_text, lower_text, file):
         #возвращается в демогиф
         return dem
     #dem.show()
-#link = "https://media.discordapp.net/attachments/1107399270404989099/1111386315246809138/image.png"
-#demotivate(' ', " ", link)
+#link = "https://sun3-21.userapi.com/impg/4Fp0xbWFmRlaw-EW449xSHmr_lW_M-jdaXYgJQ/fKD6ppr1cLY.jpg?size=829x1280&quality=96&sign=b6505841d6156544eac8dbabfe5c44aa&type=album"
+#demotivate('test', "test", link)
 #комментарии для тестов
