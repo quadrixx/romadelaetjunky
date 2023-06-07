@@ -5,9 +5,14 @@ from Demogif import demotivate_gif
 from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from discord.ui import InputText, Modal
-
+import multiprocessing as mp
+import asyncio
 key = 'AIzaSyAaxn_f4rZAW89i65kxc4jNxFDx414_gtU'
 
+
+def do(ctx, args):
+    p = mp.Process(target=demotivate_gif, args=args)
+    asyncio.get_event_loop(ctx.send(file=discord.File()))
 
 # проверяет типа гифки
 def check(content):
@@ -49,15 +54,17 @@ class MyModal(Modal):
 class GifProcessor(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.channel = None
 
-    @commands.slash_command(name = 'demotivate')
+    @commands.slash_command(name='demotivate')
     async def demotivate(self, ctx):
         modal = MyModal()
+        channel = ctx.channel
         await ctx.interaction.response.send_modal(modal)
         while True:
             while True:
-                msg = await self.bot.wait_for('message')
-                print(msg.content)
+                msg = await self.bot.wait_for('message', timeout=30)
+
                 if msg.author == ctx.author:
                     break
                 else:
@@ -71,10 +78,7 @@ class GifProcessor(commands.Cog):
                 break
             else:
                 pass
-        print(modal.upper_text)
-        demotivate_gif(modal.upper_text, modal.lower_text, 'gifka.gif')
-        await ctx.send(file=discord.File('out.gif'))
-
+        do(ctx, (modal.upper_text, modal.lower_text, 'gifka.gif'))
 
 def setup(bot):
     bot.add_cog(GifProcessor(bot))

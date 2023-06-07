@@ -39,6 +39,7 @@ class MsgListener(commands.Cog):
                 for i in ['msgs', 'urls']:
                     with open(f'servers//{name}//{i}.txt', 'w') as f:
                         f.write('')
+        print('all is done')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -51,16 +52,19 @@ class MsgListener(commands.Cog):
     # listener in charge of managing msgs
     @commands.Cog.listener()
     async def on_message(self, message):
-        cnt = message.content
-        if msg_filter(cnt):
-            cnt = dispose_of_emojis(cnt)
-        else:
-            pass
+        print(message.content)
+        guild = message.channel.guild
+        f = open(f'servers//{guild}//channel.txt', 'r')
+        chn = f.readline()
+        f.close()
+        if message.channel.name == chn:
+            cnt = message.content
+            if msg_filter(cnt):
+                cnt = dispose_of_emojis(cnt)
+                with open(f'servers//{guild}//msgs.txt', 'a') as f:
+                    f.write(f'\n{cnt}')
 
-    # listener in charge of managing urls
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        pass
+
 
     @commands.command()
     async def set(self, ctx):
@@ -69,6 +73,8 @@ class MsgListener(commands.Cog):
             name = i.name
             if ctx.message.content[6::] == name:
                 self.channel = discord.utils.get(channels, name=name)
+                with open(f'servers//{ctx.guild}//channel.txt', 'w') as f:
+                    f.write(name)
                 await ctx.send(embed=discord.Embed(title=f'junky is running on "{name}"', colour=discord.Color.green()))
                 break
         else:
