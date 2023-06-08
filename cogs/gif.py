@@ -7,7 +7,6 @@ from discord.ext import commands
 from discord.ui import InputText, Modal
 import multiprocessing as mp
 import asyncio
-key = 'AIzaSyAaxn_f4rZAW89i65kxc4jNxFDx414_gtU'
 
 
 # проверяет типа гифки
