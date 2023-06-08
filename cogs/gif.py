@@ -10,10 +10,6 @@ import asyncio
 key = 'AIzaSyAaxn_f4rZAW89i65kxc4jNxFDx414_gtU'
 
 
-def do(ctx, args):
-    p = mp.Process(target=demotivate_gif, args=args)
-    asyncio.get_event_loop(ctx.send(file=discord.File()))
-
 # проверяет типа гифки
 def check(content):
     if content.startswith('https://tenor'):
@@ -78,7 +74,8 @@ class GifProcessor(commands.Cog):
                 break
             else:
                 pass
-        do(ctx, (modal.upper_text, modal.lower_text, 'gifka.gif'))
+        demotivate_gif(modal.upper_text, modal.lower_text, 'gifka.gif')
+        await ctx.send(file=discord.File('out.gif'))
 
 def setup(bot):
     bot.add_cog(GifProcessor(bot))
