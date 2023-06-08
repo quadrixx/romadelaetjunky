@@ -9,4 +9,4 @@ for cog in cogs_list:
     bot.load_extension(f'cogs.{cog}')
 
 
-bot.run('MTEwNzM5NTkxNjY2MDQ5MDI0MA.GsW_Wi.BGdsMPplqRRcG9etNGi0jE9vhlS0qBNdFyIFGM')
+bot.run('token')
