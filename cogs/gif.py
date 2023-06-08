@@ -8,6 +8,8 @@ from discord.ui import InputText, Modal
 import multiprocessing as mp
 import asyncio
 
+key = None
+
 
 # проверяет типа гифки
 def check(content):
@@ -75,6 +77,7 @@ class GifProcessor(commands.Cog):
                 pass
         demotivate_gif(modal.upper_text, modal.lower_text, 'gifka.gif')
         await ctx.send(file=discord.File('out.gif'))
+
 
 def setup(bot):
     bot.add_cog(GifProcessor(bot))
