@@ -7,9 +7,12 @@ from discord.ext import commands
 from discord.ui import InputText, Modal
 import multiprocessing as mp
 import asyncio
+import concurrent.futures
+import subprocess
 
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=999)
 key = None
-
+loop = asyncio.get_event_loop()
 
 # проверяет типа гифки
 def check(content):
@@ -19,6 +22,11 @@ def check(content):
         return False
     else:
         return None
+
+
+async def do(ctx, upper_text, lower_text):
+    demotivate_gif(upper_text, lower_text, 'gifka.gif')
+    await ctx.send(file=discord.File('out.gif'))
 
 
 def tenor_parser(link: str):

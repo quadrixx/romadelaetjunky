@@ -1,3 +1,5 @@
+import pickle
+import multiprocessing
 from discord.ext import commands
 import discord
 from Demotivor import demotivate
@@ -23,49 +25,49 @@ def dispose_of_emojis(string):
     return result
 
 
+def add(listener, message):
+    name = message.guild.name
+    cnt = dispose_of_emojis(message.content)
+    if msg_filter(cnt):
+        listener.lstner[name].append(cnt)
+    listener.callback(name)
+
+
+def do_demotivator(msgs: list):
+    a, b = msgs[random.randint(0, len(msgs))], msgs[random.randint(0, len(msgs))]
+
+
 class MsgListener(commands.Cog):
     def __init__(self, bot: discord.Bot) -> None:
+        self.pool = multiprocessing.Pool()
+        self.lstner = {}
         self.bot = bot
+        self.len_restriction = 10
         self.channel = None
 
     # когда бот врубается, проверяет наличие отдельный папки для каждого сервера, на которых он пашет
     @commands.Cog.listener()
     async def on_ready(self):
-        folders = os.listdir('servers')
+        with open('save.pkl', 'rb') as f:
+            self.lstner = pickle.load(f)
         for guild in self.bot.guilds:
-            name = guild.name
-            if name not in folders:
-                os.mkdir(f'servers//{name}')
-                for i in ['msgs', 'urls']:
-                    with open(f'servers//{name}//{i}.txt', 'w') as f:
-                        f.write('')
-        print('all is done')
+            self.lstner.setdefault(guild.name, [])
+
+    @commands.Cog.listener()
+    async def on_disconnect(self):
+        with open('save.pkl', 'wb') as d:
+            pickle.dump(self.lstner, d)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        name = guild.name
-        os.mkdir(f'servers//{name}')
-        for i in ['msgs', 'urls']:
-            with open(f'servers//{name}//{i}.txt', 'w') as f:
-                f.write('')
+        self.lstner.update(dict([guild.name, []]))
 
-    # listener in charge of managing msgs
     @commands.Cog.listener()
-    async def on_message(self, message):
-        print(message.content)
-        guild = message.channel.guild
-        f = open(f'servers//{guild}//channel.txt', 'r')
-        chn = f.readline()
-        f.close()
-        if message.channel.name == chn:
-            cnt = message.content
-            if msg_filter(cnt):
-                cnt = dispose_of_emojis(cnt)
-                with open(f'servers//{guild}//msgs.txt', 'a') as f:
-                    f.write(f'\n{cnt}')
-
-
-
+    async def on_message(self, msg):
+        if self.channel:
+            self.pool.apply(add, (msg,))
+        else:
+            await msg.channel.send("channel is NOT set")
     @commands.command()
     async def set(self, ctx):
         channels = ctx.guild.channels
@@ -79,16 +81,15 @@ class MsgListener(commands.Cog):
                 break
         else:
             await ctx.send(embed=discord.Embed(title='channel not found', colour=discord.Color.red()))
+    def callback(self, name):
+        if len(self.lstner[name]) == self.len_restriction:
 
 
-class Counter:
-    def __init__(self, lom: list, lou: list, len_restriction: int) -> None:
-        self.lom = lom
+class Guild:
+    def __init__(self, len_restricton, lof, lou, channel):
+        self.len_restriction = len_restricton
+        self.lof = lof
         self.lou = lou
-        self.len_restriction = len_restriction
-
-    def check_for_msgs(self, lom):
-        return len(lom) <= self.len_restriction
 
 
 def setup(bot):
