@@ -12,9 +12,7 @@ import asyncio
 import concurrent.futures
 import subprocess
 
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=999)
-key = None
-loop = asyncio.get_event_loop()
+
 
 # проверяет типа гифки
 def check(content):

@@ -19,20 +19,20 @@ def pic_center(left, upper, width, height):
     return x, y
 
 
-def di(url):
+def di(url, name):
     # сохраняет картинку по юрлу под именем image.jpg
     img_data = requests.get(url).content
-    with open('image.jpg', 'wb') as handler:
+    with open(f'{name}.jpg', 'wb') as handler:
         handler.write(img_data)
+    return f'{name}.jpg'
 
 
-def demotivate(upper_text, lower_text, file):
+def demotivate(upper_text, lower_text, file, saved='demotivated'):
     # тут теперь типа перегрузка
     if type(file) == type("string"):
         # если на вход подается стока то это юрл картинки
         # это когда делаем демотиватор картинки
-        di(file)
-        filename = "image.jpg"
+        filename = di(file, saved)
         img = Image.open(filename)
         img.load()
     else:
@@ -86,7 +86,7 @@ def demotivate(upper_text, lower_text, file):
 
     if type(file) == type("string"):
         # если был был юрл то картинка сохраняется
-        dem.save('demotivated.png')
+        dem.save(f'{saved}.png')
     else:
         # если это был кадр из гифки то его демотивированная версия
         # возвращается в демогиф
