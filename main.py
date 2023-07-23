@@ -5,7 +5,7 @@ bot = commands.Bot(command_prefix='j!', intents=intents)
 
 
 token = open('token', 'r').readline().strip()
-cogs_list = ['roll', 'gif', 'handshaking']
+cogs_list = ['roll', 'gif', 'handshaking', 'all_listener']
 for cog in cogs_list:
     bot.load_extension(f'cogs.{cog}')
 

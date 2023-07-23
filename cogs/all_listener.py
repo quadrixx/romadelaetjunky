@@ -7,6 +7,7 @@ import random
 import asyncio
 from emoji import replace_emoji
 import os
+import threading
 
 
 # функция, которая проверяет содержание сообщения
@@ -25,12 +26,14 @@ def dispose_of_emojis(string):
     return result
 
 
-def add(listener, message):
-    name = message.guild.name
-    cnt = dispose_of_emojis(message.content)
-    if msg_filter(cnt):
-        listener.lstner[name].append(cnt)
-    listener.callback(name)
+def add(guild, msg):
+    if msg.channel == guild.channel:
+        if len(msg.attachments) != 0:
+            guild.lou.append(msg.attachments[0].url)
+        cnt = dispose_of_emojis(msg.content)
+        if msg_filter(cnt) and cnt != '':
+            guild.lom.append(cnt)
+        print(guild.lom)
 
 
 def do_demotivator(msgs: list):
@@ -39,20 +42,16 @@ def do_demotivator(msgs: list):
 
 class MsgListener(commands.Cog):
     def __init__(self, bot: discord.Bot) -> None:
-        self.pool = multiprocessing.Pool()
-        self.lstner = {}
         self.bot = bot
-        self.len_restriction = 10
-        self.channel = None
+        self.lstner = {}
 
     # когда бот врубается, проверяет наличие отдельный папки для каждого сервера, на которых он пашет
     @commands.Cog.listener()
     async def on_ready(self):
-        with open('save.pkl', 'rb') as f:
-            self.lstner = pickle.load(f)
-        for guild in self.bot.guilds:
-            self.lstner.setdefault(guild.name, [])
 
+        for guild in self.bot.guilds:
+            self.lstner.setdefault(guild.name, Guild(guild.name, 50))
+        print(self.lstner)
     @commands.Cog.listener()
     async def on_disconnect(self):
         with open('save.pkl', 'wb') as d:
@@ -60,36 +59,33 @@ class MsgListener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        self.lstner.update(dict([guild.name, []]))
+        self.lstner.update(dict([guild.name, Guild(guild.name, 50)]))
 
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if self.channel:
-            self.pool.apply(add, (msg,))
-        else:
-            await msg.channel.send("channel is NOT set")
+        process = threading.Thread(target= add, args=(self.lstner[msg.guild.name], msg))
+        process.start()
+        process.join()
+        print(self.lstner['клуб хейтеров'])
+
     @commands.command()
     async def set(self, ctx):
-        channels = ctx.guild.channels
-        for i in channels:
-            name = i.name
-            if ctx.message.content[6::] == name:
-                self.channel = discord.utils.get(channels, name=name)
-                with open(f'servers//{ctx.guild}//channel.txt', 'w') as f:
-                    f.write(name)
-                await ctx.send(embed=discord.Embed(title=f'junky is running on "{name}"', colour=discord.Color.green()))
-                break
-        else:
-            await ctx.send(embed=discord.Embed(title='channel not found', colour=discord.Color.red()))
-    def callback(self, name):
-        if len(self.lstner[name]) == self.len_restriction:
+        self.lstner[ctx.guild.name].channel = ctx.channel
 
 
 class Guild:
-    def __init__(self, len_restricton, lof, lou, channel):
+    def __init__(self, name, len_restricton, lom=[], lou=[], channel=None):
+        self.name = name
         self.len_restriction = len_restricton
-        self.lof = lof
+        self.pic_restriction = 20
+        self.lom = lom
         self.lou = lou
+        self.channel = channel
+
+    def callback(self):
+        if len(self.lom) >= self.len_restriction and len(self.lou) >= self.pic_restriction:
+            print('demoready')
+
 
 
 def setup(bot):

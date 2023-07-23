@@ -1,3 +1,5 @@
+import threading
+
 import discord
 from discord import Interaction
 import requests
@@ -24,9 +26,9 @@ def check(content):
         return None
 
 
-async def do(ctx, upper_text, lower_text):
+def do(ctx, upper_text, lower_text):
     demotivate_gif(upper_text, lower_text, 'gifka.gif')
-    await ctx.send(file=discord.File('out.gif'))
+    asyncio.get_event_loop().create_task(ctx.send(file=discord.File('out.gif')))
 
 
 def tenor_parser(link: str):
@@ -63,6 +65,7 @@ class GifProcessor(commands.Cog):
 
     @commands.slash_command(name='demotivate')
     async def demotivate(self, ctx):
+
         modal = MyModal()
         channel = ctx.channel
         await ctx.interaction.response.send_modal(modal)
@@ -83,9 +86,8 @@ class GifProcessor(commands.Cog):
                 break
             else:
                 pass
-        demotivate_gif(modal.upper_text, modal.lower_text, 'gifka.gif')
-        await ctx.send(file=discord.File('out.gif'))
-
+        process = threading.Thread(target=do, args=(ctx, modal.upper_text, modal.lower_text))
+        process.run()
 
 def setup(bot):
     bot.add_cog(GifProcessor(bot))
