@@ -26,16 +26,6 @@ def dispose_of_emojis(string):
     return result
 
 
-def add(guild, msg):
-    if msg.channel == guild.channel:
-        if len(msg.attachments) != 0:
-            guild.lou.append(msg.attachments[0].url)
-        cnt = dispose_of_emojis(msg.content)
-        if msg_filter(cnt) and cnt != '':
-            guild.lom.append(cnt)
-        print(guild.lom)
-
-
 def do_demotivator(msgs: list):
     a, b = msgs[random.randint(0, len(msgs))], msgs[random.randint(0, len(msgs))]
 
@@ -43,15 +33,12 @@ def do_demotivator(msgs: list):
 class MsgListener(commands.Cog):
     def __init__(self, bot: discord.Bot) -> None:
         self.bot = bot
-        self.lstner = {}
-
+        self.lstner = {'emptiness': Guild('emptiness', 50, [], []), 'клуб хейтеров': Guild('клуб хейтеров', 50, [], [])}
     # когда бот врубается, проверяет наличие отдельный папки для каждого сервера, на которых он пашет
     @commands.Cog.listener()
     async def on_ready(self):
-
-        for guild in self.bot.guilds:
-            self.lstner.setdefault(guild.name, Guild(guild.name, 50))
         print(self.lstner)
+
     @commands.Cog.listener()
     async def on_disconnect(self):
         with open('save.pkl', 'wb') as d:
@@ -63,18 +50,29 @@ class MsgListener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg):
-        process = threading.Thread(target= add, args=(self.lstner[msg.guild.name], msg))
-        process.start()
-        process.join()
-        print(self.lstner['клуб хейтеров'])
+        if msg.channel == self.lstner[msg.guild.name].channel:
+            if len(msg.attachments) != 0:
+                self.lstner[msg.guild.name].lou.append(msg.attachments[0].url)
+            cnt = dispose_of_emojis(msg.content)
+            if msg_filter(cnt) and cnt != '':
+                self.lstner[msg.guild.name].lom.append(cnt)
 
     @commands.command()
     async def set(self, ctx):
         self.lstner[ctx.guild.name].channel = ctx.channel
 
+    @commands.command()
+    async def check(self, ctx):
+        for i,j in self.lstner.items():
+            print(f'{i}:{j.lom}')
+    @commands.command()
+    async def c(self,ctx):
+        print(self.lstner['emptiness'].channel == self.lstner['клуб хейтеров'].channel)
+        print(self.lstner['emptiness'].channel is self.lstner['клуб хейтеров'].channel)
+
 
 class Guild:
-    def __init__(self, name, len_restricton, lom=[], lou=[], channel=None):
+    def __init__(self, name, len_restricton, lom, lou, channel=None):
         self.name = name
         self.len_restriction = len_restricton
         self.pic_restriction = 20
