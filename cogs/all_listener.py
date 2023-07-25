@@ -1,6 +1,8 @@
+import atexit
 import pickle
 import multiprocessing
-
+import collections
+import asyncio_atexit
 import requests
 from discord.ext import commands
 import discord
@@ -12,6 +14,7 @@ import os
 import threading
 
 
+to_save = {}
 # функция, которая проверяет содержание сообщения
 def msg_filter(msg):
     if msg[0:5] == "https" or len(msg) > 60 or msg.startswith('j!'):
@@ -44,12 +47,8 @@ class MsgListener(commands.Cog):
     # когда бот врубается, проверяет наличие отдельный папки для каждого сервера, на которых он пашет
     @commands.Cog.listener()
     async def on_ready(self):
-        print(self.lstner)
-
-    @commands.Cog.listener()
-    async def on_disconnect(self):
-        with open('save.pkl', 'wb') as d:
-            pickle.dump(self.lstner, d)
+        # переопределение self.lstner на значение из бдшки
+        ...
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -80,6 +79,10 @@ class MsgListener(commands.Cog):
         print(self.lstner['emptiness'].channel == self.lstner['клуб хейтеров'].channel)
         print(self.lstner['emptiness'].channel is self.lstner['клуб хейтеров'].channel)
 
+    def end(self):
+        # запись в бдшку self.lstner
+        ...
+
 
 class Guild:
     def __init__(self, name, len_restricton, lom, lou, channel=None):
@@ -103,3 +106,5 @@ class Guild:
 
 def setup(bot):
     bot.add_cog(MsgListener(bot))
+
+
